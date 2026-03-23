@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Madhushala Campaign Generator</title>
+</head>
+
+<body style="font-family: Arial; background:#0f172a; color:white; display:flex; justify-content:center; align-items:center; height:100vh;">
+
+  <div style="background:#1e293b; padding:30px; border-radius:10px; width:350px; box-shadow:0 0 20px rgba(0,0,0,0.3);">
+
+    <h2 style="text-align:center;">🚀 Generate Campaign</h2>
+
+    <form id="campaignForm">
+
+      <label>Campaign Goal</label><br>
+      <select id="campaign_goal" style="width:100%; padding:8px; margin:10px 0;">
+        <option>Highlight stock leakage and generate demo requests</option>
+        <option>Generate demo requests from liquor shop owners</option>
+        <option>Convert manual billing shops to POS users</option>
+        <option>Educate about GST and excise compliance risks</option>
+      </select>
+
+      <label>Tone</label><br>
+      <select id="tone" style="width:100%; padding:8px; margin:10px 0;">
+        <option>fear-based</option>
+        <option>professional</option>
+        <option>emotional</option>
+        <option>direct sales</option>
+      </select>
+
+      <label>Language</label><br>
+      <select id="language" style="width:100%; padding:8px; margin:10px 0;">
+        <option>Hinglish</option>
+        <option>Hindi</option>
+        <option>English</option>
+      </select>
+
+      <label>Focus Angle</label><br>
+      <select id="focus_angle" style="width:100%; padding:8px; margin:10px 0;">
+        <option>Inventory loss</option>
+        <option>Fast billing</option>
+        <option>GST compliance</option>
+        <option>Profit increase</option>
+      </select>
+
+      <button type="submit" style="width:100%; padding:10px; background:#22c55e; border:none; color:white; font-weight:bold; cursor:pointer;">
+        Generate 🚀
+      </button>
+
+    </form>
+
+    <p id="status" style="margin-top:15px; text-align:center;"></p>
+
+  </div>
+
+  <script>
+    const form = document.getElementById('campaignForm');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      status.innerText = "⏳ Generating...";
+
+      const data = {
+        campaign_goal: document.getElementById('campaign_goal').value,
+        tone: document.getElementById('tone').value,
+        language: document.getElementById('language').value,
+        focus_angle: document.getElementById('focus_angle').value
+      };
+
+      try {
+        const res = await fetch("https://koushik989.app.n8n.cloud/webhook/yt/uploads", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (res.ok) {
+          status.innerText = "✅ Campaign generated! Check your email.";
+        } else {
+          status.innerText = "❌ Failed to send request.";
+        }
+
+      } catch (err) {
+        status.innerText = "❌ Error connecting to server.";
+      }
+    });
+  </script>
+
+</body>
+</html>
