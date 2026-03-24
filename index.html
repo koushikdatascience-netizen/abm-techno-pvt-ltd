@@ -1,95 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Madhushala Campaign Generator</title>
+    <meta charset="UTF-8">
+    <title>YouTube Studio Lite</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <style>
+        .card { background: #1e1e1e; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .progress-container { display: none; margin: 20px 0; }
+        progress { width: 100%; height: 25px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    </style>
 </head>
+<body>
+    <h1>🎥 YouTube Video Manager</h1>
+    
+    <div class="card">
+        <h3>Step 1: Connection</h3>
+        <a href="http://localhost:8000/login"><button>🔗 Connect YouTube Account</button></a>
+    </div>
 
-<body style="font-family: Arial; background:#0f172a; color:white; display:flex; justify-content:center; align-items:center; height:100vh;">
+    <form id="ytForm">
+        <div class="card">
+            <h3>Step 2: Video File & Basics</h3>
+            <label>Select Video File</label>
+            <input type="file" id="videoFile" accept="video/*" required>
+            
+            <label>Video Title</label>
+            <input type="text" id="title" maxlength="100" placeholder="Enter title..." required>
+            
+            <label>Description</label>
+            <textarea id="description" rows="5" placeholder="Tell viewers about your video"></textarea>
+        </div>
 
-  <div style="background:#1e293b; padding:30px; border-radius:10px; width:350px; box-shadow:0 0 20px rgba(0,0,0,0.3);">
+        <div class="card grid">
+            <div>
+                <h3>Step 3: Optimization</h3>
+                <label>Tags (Comma separated)</label>
+                <input type="text" id="tags" placeholder="tutorial, tech, vlog">
 
-    <h2 style="text-align:center;">🚀 Generate Campaign</h2>
+                <label>Category</label>
+                <select id="categoryId">
+                    <option value="22">People & Blogs</option>
+                    <option value="20">Gaming</option>
+                    <option value="27">Education</option>
+                    <option value="24">Entertainment</option>
+                    <option value="10">Music</option>
+                    <option value="28">Science & Technology</option>
+                </select>
+            </div>
+            <div>
+                <h3>Step 4: Visibility</h3>
+                <label>Privacy</label>
+                <select id="privacy">
+                    <option value="public">Public (Instant)</option>
+                    <option value="unlisted">Unlisted</option>
+                    <option value="private">Private (Required for Scheduling)</option>
+                </select>
 
-    <form id="campaignForm">
+                <label>Schedule Publication (Optional)</label>
+                <input type="datetime-local" id="publishAt">
+                <small>Note: Only works if Privacy is set to 'Private'</small>
+            </div>
+        </div>
 
-      <label>Campaign Goal</label><br>
-      <select id="campaign_goal" style="width:100%; padding:8px; margin:10px 0;">
-        <option>Highlight stock leakage and generate demo requests</option>
-        <option>Generate demo requests from liquor shop owners</option>
-        <option>Convert manual billing shops to POS users</option>
-        <option>Educate about GST and excise compliance risks</option>
-      </select>
-
-      <label>Tone</label><br>
-      <select id="tone" style="width:100%; padding:8px; margin:10px 0;">
-        <option>fear-based</option>
-        <option>professional</option>
-        <option>emotional</option>
-        <option>direct sales</option>
-      </select>
-
-      <label>Language</label><br>
-      <select id="language" style="width:100%; padding:8px; margin:10px 0;">
-        <option>Hinglish</option>
-        <option>Hindi</option>
-        <option>English</option>
-      </select>
-
-      <label>Focus Angle</label><br>
-      <select id="focus_angle" style="width:100%; padding:8px; margin:10px 0;">
-        <option>Inventory loss</option>
-        <option>Fast billing</option>
-        <option>GST compliance</option>
-        <option>Profit increase</option>
-      </select>
-
-      <button type="submit" style="width:100%; padding:10px; background:#22c55e; border:none; color:white; font-weight:bold; cursor:pointer;">
-        Generate 🚀
-      </button>
-
+        <div class="card">
+            <label style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="madeForKids"> 
+                <span>This video is "Made for Kids" (COPA)</span>
+            </label>
+            <br>
+            <button type="submit" style="width: 100%; background: #cc0000; color: white;">🚀 Upload to YouTube</button>
+        </div>
     </form>
 
-    <p id="status" style="margin-top:15px; text-align:center;"></p>
+    <div id="statusArea" class="progress-container">
+        <h4 id="statusText">Uploading...</h4>
+        <progress id="uploadProgress" value="0" max="100"></progress>
+    </div>
 
-  </div>
+    <script>
+        document.getElementById('ytForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const statusArea = document.getElementById('statusArea');
+            const progress = document.getElementById('uploadProgress');
+            const statusText = document.getElementById('statusText');
 
-  <script>
-    const form = document.getElementById('campaignForm');
-    const status = document.getElementById('status');
+            statusArea.style.display = 'block';
+            
+            const formData = new FormData();
+            formData.append('file', document.getElementById('videoFile').files[0]);
+            formData.append('title', document.getElementById('title').value);
+            formData.append('description', document.getElementById('description').value);
+            formData.append('tags', document.getElementById('tags').value);
+            formData.append('category_id', document.getElementById('categoryId').value);
+            formData.append('privacy_status', document.getElementById('privacy').value);
+            formData.append('made_for_kids', document.getElementById('madeForKids').checked);
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+            const schedule = document.getElementById('publishAt').value;
+            if (schedule) {
+                formData.append('publish_at', new Date(schedule).toISOString());
+            }
 
-      status.innerText = "⏳ Generating...";
-
-      const data = {
-        campaign_goal: document.getElementById('campaign_goal').value,
-        tone: document.getElementById('tone').value,
-        language: document.getElementById('language').value,
-        focus_angle: document.getElementById('focus_angle').value
-      };
-
-      try {
-        const res = await fetch("https://koushik989.app.n8n.cloud/webhook-test/yt/uploads", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(data)
-        });
-
-        if (res.ok) {
-          status.innerText = "✅ Campaign generated! Check your email.";
-        } else {
-          status.innerText = "❌ Failed to send request.";
-        }
-
-      } catch (err) {
-        status.innerText = "❌ Error connecting to server.";
-      }
-    });
-  </script>
-
+            try {
+                const response = await fetch('http://localhost:8000/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    statusText.innerText = "✅ Success! Video ID: " + data.video_id;
+                    progress.value = 100;
+                } else {
+                    statusText.innerText = "❌ Error: " + data.detail;
+                }
+            } catch (err) {
+                statusText.innerText = "❌ Connection failed.";
+            }
+        };
+    </script>
 </body>
 </html>
